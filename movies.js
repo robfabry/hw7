@@ -29,6 +29,19 @@ window.addEventListener('DOMContentLoaded', async function(event) {
       await db.collection('watched').doc(`${movie.id}`).set({})
     }) 
   }
+  // Initializes FirebaseUI Auth
+  let ui = new firebaseui.auth.AuthUI(firebase.auth())
+
+  // FirebaseUI configuration
+  let authUIConfig = {
+    signInOptions: [
+      firebase.auth.EmailAuthProvider.PROVIDER_ID
+    ],
+    signInSuccessUrl: 'todo.html'
+  }
+
+  // Starts FirebaseUI Auth
+  ui.start('.sign-in-or-sign-out', authUIConfig)
 })
 
 // Goal:   Refactor the movies application from last week, so that it supports
