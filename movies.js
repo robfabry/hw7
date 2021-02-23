@@ -2,6 +2,17 @@
   firebase.auth().onAuthStateChanged(async function(user) {
 
     if (user) {
+      console.log('signed in')
+
+      document.querySelector('.sign-in-or-sign-out').innerHTML= `
+        <a href='#' class='sign-out-button text-white-500 underline'>Sign Out</a>  
+      `
+      document.querySelector('.sign-out-button').addEventListener('click', function(event) {
+        event.preventDefault()
+        firebase.auth().signOut()
+        document.location.href = 'movies.html'
+      })
+
       let db = firebase.firestore()
       let apiKey = '88a64734bf39efa91f5c2516ab241608'
       let response = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=88a64734bf39efa91f5c2516ab241608&language=en-US`)
@@ -33,6 +44,8 @@
         }) 
       }
     } else {
+      console.log('signed out')
+      // document.querySelector('form').classList.add('hidden')
       // Initializes FirebaseUI Auth
       let ui = new firebaseui.auth.AuthUI(firebase.auth())
 
