@@ -4,7 +4,15 @@
     if (user) {
       console.log('signed in')
 
+      // pull structure from todo-complete (week 7)
+      let db = firebase.firestore()
+      db.collection('users').doc(user.uid).set({
+      name: user.displayName,
+      email: user.email
+      })
+
       document.querySelector('.sign-in-or-sign-out').innerHTML= `
+        <div class='text-green-500'>Signed in as ${user.displayName}</div>  
         <a href='#' class='sign-out-button text-white-500 underline'>Sign Out</a>  
       `
       document.querySelector('.sign-out-button').addEventListener('click', function(event) {
@@ -13,16 +21,19 @@
         document.location.href = 'movies.html'
       })
 
-      let db = firebase.firestore()
+      // let db = firebase.firestore()
       let apiKey = '88a64734bf39efa91f5c2516ab241608'
       let response = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=88a64734bf39efa91f5c2516ab241608&language=en-US`)
       let json = await response.json()
       let movies = json.results
+      let userId = user.uid
+      
       console.log(movies)
       
       for (let i=0; i<movies.length; i++) {
         let movie = movies[i]
-        let docRef = await db.collection('watched').doc(`${movie.id}`).get()
+        let movieId = movie.id
+        let docRef = await db.collection('watched').doc(`${movie.id}-${userId}`).get()
         let watchedMovie = docRef.data()
         let opacityClass = ''
         if (watchedMovie) {
@@ -40,7 +51,8 @@
           event.preventDefault()
           let movieElement = document.querySelector(`.movie-${movie.id}`)
           movieElement.classList.add('opacity-20')
-          await db.collection('watched').doc(`${movie.id}`).set({})
+          await db.collection('watched').doc(`${movie.id}-${user.uid}`).set({})
+          // need user.uid to hold watched movies
         }) 
       }
     } else {
